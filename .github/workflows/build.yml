@@ -21,7 +21,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyinstaller
         pip install -r requirements.txt
 
     - name: Build EXE
@@ -29,8 +28,11 @@ jobs:
         pyinstaller --onefile 1.py
         ls dist  # 列出 dist 目录的内容
 
+    - name: List dist directory
+      run: ls dist
+
     - name: Upload EXE
       uses: actions/upload-artifact@v2
       with:
         name: exe-file
-        path: ./dist/1.exe  # 使用相对路径
+        path: dist/1.exe
