@@ -1,12 +1,10 @@
-name: Build EXE
+name: Build and Upload EXE
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch: # 添加手动触发
 
 jobs:
-  build:
+  build-and-upload:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,9 +12,17 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v1
       with:
-        python-version: '3.x'  # 选择你的 Python 版本
+        python-version: '3.8'
+
+    - name: Load cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
 
     - name: Install dependencies
       run: |
@@ -28,11 +34,12 @@ jobs:
         pyinstaller --onefile 1.py
         ls dist  # 列出 dist 目录的内容
 
-    - name: List dist directory
-      run: ls dist
+    - name: Compress EXE
+      run: |
+        zip -j dist/1.zip dist/1.exe  # 将 1.exe 压缩成 1.zip
 
-    - name: Upload EXE
+    - name: Upload ZIP
       uses: actions/upload-artifact@v2
       with:
-        name: exe-file
-        path: dist/1.exe
+        name: exe-zip
+        path: dist/1.zip  # 上传压缩文件
