@@ -27,9 +27,10 @@ jobs:
     - name: Build EXE
       run: |
         pyinstaller --onefile 1.py
+        ls dist  # 列出 dist 目录的内容
 
     - name: Upload EXE
       uses: actions/upload-artifact@v2
       with:
         name: exe-file
-        path: dist/1.exe  # 替换为生成的 EXE 文件路径
+        path: ./dist/1.exe  # 使用相对路径
